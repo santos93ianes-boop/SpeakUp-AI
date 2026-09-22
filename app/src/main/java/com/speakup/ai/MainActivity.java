@@ -62,10 +62,8 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public void setLanguage(String language) {
-            runOnUiThread(() -> {
-                speechLanguage = language != null && language.startsWith("es") ? "es-ES" : "en-US";
-                if (tts != null) tts.setLanguage(speechLanguage.startsWith("es") ? new Locale("es", "ES") : Locale.US);
-            });
+            speechLanguage = language != null && language.startsWith("es") ? "es-ES" : "en-US";
+            runOnUiThread(() -> { if (tts != null) tts.setLanguage(speechLanguage.startsWith("es") ? new Locale("es", "ES") : Locale.US); });
         }
 
         @JavascriptInterface
@@ -109,7 +107,7 @@ public class MainActivity extends Activity {
             ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (results != null && !results.isEmpty()) {
                 String safe = results.get(0).replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ");
-                webView.evaluateJavascript((speechLanguage.startsWith("es") ? "window.receiveVoiceEs('" : "window.receiveVoice('") + safe + "')", null);
+                webView.evaluateJavascript("window.receiveVoice('" + safe + "')", null);
             }
         }
     }
