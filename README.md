@@ -27,3 +27,9 @@ A versão do APK funciona de forma local e guiada, sem exigir chave de API. Para
 5. Ao final, abra a execução e baixe o artefato `SpeakUpAI-debug-apk`.
 
 O workflow também roda automaticamente quando houver push para `main` ou `master`.
+
+
+## V4 — Seleção de idioma na abertura
+- Tela inicial premium para escolher English ou Español antes de entrar no curso.
+- Progresso e experiência continuam separados por idioma.
+- Alternância entre inglês e espanhol permanece disponível dentro do app.

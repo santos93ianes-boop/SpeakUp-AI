@@ -23,6 +23,7 @@ public class MainActivity extends Activity {
     private static final int MIC_REQ = 502;
     private WebView webView;
     private TextToSpeech tts;
+    private String speechLanguage = "en-US";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,14 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void setLanguage(String language) {
+            runOnUiThread(() -> {
+                speechLanguage = language != null && language.startsWith("es") ? "es-ES" : "en-US";
+                if (tts != null) tts.setLanguage(speechLanguage.startsWith("es") ? new Locale("es", "ES") : Locale.US);
+            });
+        }
+
+        @JavascriptInterface
         public void speak(String text) {
             runOnUiThread(() -> {
                 if (tts != null) tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "speakup");
@@ -81,8 +90,8 @@ public class MainActivity extends Activity {
     private void launchSpeech() {
         Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
-        i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak in English");
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, speechLanguage);
+        i.putExtra(RecognizerIntent.EXTRA_PROMPT, speechLanguage.startsWith("es") ? "Habla en español" : "Speak in English");
         try { startActivityForResult(i, SPEECH_REQ); }
         catch (ActivityNotFoundException e) { webView.evaluateJavascript("window.voiceUnavailable && window.voiceUnavailable()", null); }
     }
@@ -100,7 +109,7 @@ public class MainActivity extends Activity {
             ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (results != null && !results.isEmpty()) {
                 String safe = results.get(0).replace("\\", "\\\\").replace("'", "\\'").replace("\n", " ");
-                webView.evaluateJavascript("window.receiveVoice('" + safe + "')", null);
+                webView.evaluateJavascript((speechLanguage.startsWith("es") ? "window.receiveVoiceEs('" : "window.receiveVoice('") + safe + "')", null);
             }
         }
     }
